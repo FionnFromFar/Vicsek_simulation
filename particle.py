@@ -23,8 +23,11 @@ class particle:
 
 #new system class to manage all the birds
 class system:
-    def __init__(self, num_particles, box_size):
+    #giving the birds the gift of vision and hearing :)
+    def __init__(self, num_particles, box_size, radius, noise):
         self.box_size = box_size
+        self.radius = radius
+        self.noise = noise
         self.particles = []
 
         #spawning all the birds
@@ -34,13 +37,52 @@ class system:
             y = np.random.uniform(0, box_size)
 
             #making sure that the initial speeds are all the same
-            speed = 2
+            speed = 1
             #giving the birds a random angle between 0 and 2pi
             theta = np.random.uniform(0, 2 * np.pi)
 
             #making the bird and adding it to the list (pretty much the same as before)
             new_bird = particle(x, y, speed, theta)
             self.particles.append(new_bird)
+
+    def align(self):
+        #the first step is to calc all the angles for every bird before any of them actually turn
+        new_thetas = []
+
+        for p1 in self.particles:
+
+            sum_sin = 0.0
+            sum_cos = 0.0
+            neighbour_count = 0
+
+            for p2 in self.particles:
+                #calculating the distance between bird 1 and 2
+                dx = p2.x - p1.x
+                dy = p2.y - p1.y
+
+                #If the distance is more than half the box then look across to the other edge
+                dx = dx - self.box_size * np.round(dx/self.box_size)
+                dy = dy - self.box_size * np.round(dy/self.box_size)
+
+                #pythagorean distance calc
+                dist = np.sqrt(dx**2 + dy**2)
+
+                #checking inside the vision radius
+                if dist < self.radius:
+                    sum_sin += np.sin(p2.theta)
+                    sum_cos += np.cos(p2.theta)
+                    neighbour_count += 1
+
+            #average angle of all the neighbours
+            avg_theta = np.arctan2(sum_sin / neighbour_count, sum_cos/neighbour_count)
+            
+            #adding a lil bit of noise
+            random_error = np.random.uniform(-self.noise/2, self.noise/2)
+
+            new_thetas.append(avg_theta + random_error)
+
+        for i, p in enumerate(self.particles):
+            p.theta = new_thetas[i]
 
     def evolve(self, dt):
         #getting all the birds to move
@@ -54,14 +96,14 @@ class system:
 #setting up the simulation and animation
 
 box_size = 10
-my_flock = system(num_particles=50, box_size=box_size) #50 birbs ;)
+my_flock = system(num_particles=50, box_size=box_size, radius=1.5, noise=0.1) #50 birbs ;)
 
 #making the canvas
 fig, ax = plt.subplots()
 ax.set_xlim(0, box_size)
 ax.set_ylim(0, box_size)
 ax.set_aspect("equal")
-ax.set_title("50 flying birds")
+ax.set_title("50 flying birds with vision and hearing")
 
 #extracting positions as lists
 x_vals = [p.x for p in my_flock.particles]
@@ -72,6 +114,9 @@ scatter = ax.scatter(x_vals, y_vals, c="blue", s=15)
 
 #animating!
 def update(frame):
+    #first the birds look
+    my_flock.align()
+    #THEN they turn and move
     my_flock.evolve(dt=0.05)
 
     #fetching new positions
@@ -82,10 +127,10 @@ def update(frame):
     scatter.set_offsets(np.c_[new_x, new_y])
     return scatter,
 
-ani = animation.FuncAnimation(fig, update, frames=200, interval=30, blit=True)
+ani = animation.FuncAnimation(fig, update, frames=500, interval=30, blit=True)
 
 #saving the animation as a gif
 print("Rendering animation...")
-ani.save("flock2.gif", writer="pillow")
-print("Done! The birds are flying in flock2.gif")
+ani.save("flock3.gif", writer="pillow")
+print("Done! The birds are flying in flock3.gif")
 

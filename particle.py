@@ -3,16 +3,20 @@ import matplotlib.pyplot as plt
 import matplotlib.animation as animation
 
 class particle:
-    def __init__(self, x, y, vx, vy):
+    def __init__(self, x, y, speed, theta):
         self.x = x
         self.y = y
-        self.vx = vx
-        self.vy = vy
+        self.speed = speed
+        self.theta = theta
     
     def move(self, dt):
-        #addition of function which uses velocity to update position
-        self.x = self.x + (self.vx * dt)
-        self.y = self.y + (self.vy * dt)
+        #changing calculations to get vx and vy using trig
+        vx = self.speed * np.cos(self.theta)
+        vy = self.speed * np.sin(self.theta)
+
+        #updating the position like normal
+        self.x = self.x + (vx * dt)
+        self.y = self.y + (vy * dt)
 
     def report_position(self):
         print(f"I am a particle with position x:{self.x:.2f}, y:{self.y:.2f}")
@@ -28,12 +32,14 @@ class system:
             #making sure the intial positions are within the box
             x = np.random.uniform(0, box_size)
             y = np.random.uniform(0, box_size)
-            #making sure that the initial speeds don't vary too much from bird to bird
-            vx = np.random.uniform(-1.0, 1.0)
-            vy = np.random.uniform(-1.0, 1.0)
 
-            #making the bird and adding it to the list
-            new_bird = particle(x, y, vx, vy)
+            #making sure that the initial speeds are all the same
+            speed = 2
+            #giving the birds a random angle between 0 and 2pi
+            theta = np.random.uniform(0, 2 * np.pi)
+
+            #making the bird and adding it to the list (pretty much the same as before)
+            new_bird = particle(x, y, speed, theta)
             self.particles.append(new_bird)
 
     def evolve(self, dt):
@@ -48,7 +54,7 @@ class system:
 #setting up the simulation and animation
 
 box_size = 10
-my_flock = system(num_particles=50, box_size=box_size)#50 birbs ;)
+my_flock = system(num_particles=50, box_size=box_size) #50 birbs ;)
 
 #making the canvas
 fig, ax = plt.subplots()
@@ -66,7 +72,7 @@ scatter = ax.scatter(x_vals, y_vals, c="blue", s=15)
 
 #animating!
 def update(frame):
-    my_flock.evolve(dt=0.1)
+    my_flock.evolve(dt=0.05)
 
     #fetching new positions
     new_x = [p.x for p in my_flock.particles]
@@ -80,6 +86,6 @@ ani = animation.FuncAnimation(fig, update, frames=200, interval=30, blit=True)
 
 #saving the animation as a gif
 print("Rendering animation...")
-ani.save("flock1.gif", writer="pillow")
-print("Done! The birds are flying in flock1.gif")
+ani.save("flock2.gif", writer="pillow")
+print("Done! The birds are flying in flock2.gif")
 

@@ -96,7 +96,8 @@ class system:
 #setting up the simulation and animation
 
 box_size = 10
-my_flock = system(num_particles=50, box_size=box_size, radius=1.5, noise=0.1) #50 birbs ;)
+my_flock = system(num_particles=50, box_size=box_size, radius=1.5, noise=2) #50 birbs ;)
+#increasing the noise is like removing their brains, they dont know how to calibrate a correct turn
 
 #making the canvas
 fig, ax = plt.subplots()

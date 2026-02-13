@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib.pyplot as plt
+import matplotlib.animation as animation
 
 class particle:
     def __init__(self, x, y, vx, vy):
@@ -43,15 +45,41 @@ class system:
             p.x = p.x % self.box_size
             p.y = p.y % self.box_size
 
-#testing the new class
-my_flock = system(num_particles=10, box_size=10)
+#setting up the simulation and animation
 
-print("Starting positions of the first 3 birds:")
-for i in range(3):
-    print(f"Bird {i}: x={my_flock.particles[i].x:.2f}, y={my_flock.particles[i].y:.2f}")
+box_size = 10
+my_flock = system(num_particles=50, box_size=box_size)#50 birbs ;)
 
-my_flock.evolve(dt=5)#evolution of 5 seconds
+#making the canvas
+fig, ax = plt.subplots()
+ax.set_xlim(0, box_size)
+ax.set_ylim(0, box_size)
+ax.set_aspect("equal")
+ax.set_title("50 flying birds")
 
-print("\nPositions after 5 seconds:")
-for i in range(3):
-    print(f"Bird {i}: x={my_flock.particles[i].x:.2f}, y={my_flock.particles[i].y:.2f}")
+#extracting positions as lists
+x_vals = [p.x for p in my_flock.particles]
+y_vals = [p.y for p in my_flock.particles]
+
+#making the birds blue dots
+scatter = ax.scatter(x_vals, y_vals, c="blue", s=15)
+
+#animating!
+def update(frame):
+    my_flock.evolve(dt=0.1)
+
+    #fetching new positions
+    new_x = [p.x for p in my_flock.particles]
+    new_y = [p.y for p in my_flock.particles]
+
+    #updating the frame
+    scatter.set_offsets(np.c_[new_x, new_y])
+    return scatter,
+
+ani = animation.FuncAnimation(fig, update, frames=200, interval=30, blit=True)
+
+#saving the animation as a gif
+print("Rendering animation...")
+ani.save("flock1.gif", writer="pillow")
+print("Done! The birds are flying in flock1.gif")
+

@@ -6,15 +6,26 @@ int main() {
     //Making the particle
     Particle p(0.0, 0.0, 1.0, 0.0);
 
+    //setting up the simulation
+    double dt = 1.0;
+    int total_steps = 10;
+
+    std::cout << "--- Starting Simulation ---" << std::endl;
+
     //printing the intial state
     std::cout << "Initial position: " << p.x << ", "<< p.y << std::endl;
 
-    //moving the particle for 1 second
-    p.move(1.0);
+    //making the loop
+    for (int t = 1; t<= total_steps; t++) {
+        //moving the particle by dt
+        p.move(dt);
 
-    //print the new position
-    std::cout << "New position:    " << p.x << ", " << p.y << std::endl;
+        //printint new position
+        std::cout << "Step " << t << ": " << p.x << ", " << p.y << std::endl;
+    }
     
+    std::cout << "--- Simulation Complete ---" << std::endl;
+
     return 0;
     //return 0 is a thing used in c++ to show that no errors have been found
     // its used because in c++ main() must return an integer. 

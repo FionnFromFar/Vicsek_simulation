@@ -6,12 +6,12 @@
 int main() {
     //This is the main function which is the code which is actually run
     //Adding the parameters
-    int N = 50; //50 birds
+    int N = 200; //number of birds
     double box_size = 10.0;
-    double radius = 1.0;
-    double noise = 0.1;
+    double radius = 0.1;
+    double noise = 3.0;
     double dt = 0.1;
-    int steps = 20;
+    int steps = 500;
 
     //setting up the system object
     System sys(N, box_size, radius, noise);
@@ -19,7 +19,7 @@ int main() {
     //adding the data file
     std::ofstream dataFile("positions.csv");
     //writing the header
-    dataFile << "time, id, x, y\n";
+    dataFile << "time,id,x,y\n";
 
     std::cout << "---Running simulation with " << N << "birds---" << std::endl;
 

@@ -7,7 +7,7 @@ std::random_device rd; //generating the rd which is used to generate a seed
 std::mt19937 gen(rd()); //uses rd to generate a seed
 std::uniform_real_distribution<> dis(0.0, 1.0); //defining the prob distribution
 
-system::system(int num_particles, double box_size, double radius, double noise) {
+System::System(int num_particles, double box_size, double radius, double noise) {
     this->box_size = box_size;
     this->radius = radius;
     this->noise = noise;
@@ -21,7 +21,7 @@ system::system(int num_particles, double box_size, double radius, double noise) 
     }
 }
 
-void system::align() {
+void System::align() {
     std::vector<double> new_thetas; // create a list of variable type double
     for(const auto& p1 : particles) {
         double sum_sin = 0.0;
@@ -60,7 +60,7 @@ void system::align() {
     }
 }
 
-void system::evolve(double dt) {
+void System::evolve(double dt) {
     for(auto& p : particles) {
         p.move(dt);
         p.x = std::fmod(p.x, box_size);
@@ -72,13 +72,13 @@ void system::evolve(double dt) {
 }
 
 //linking to python
-std::vector<double> system::get_x_positions() {
+std::vector<double> System::get_x_positions() {
     std::vector<double> xs;
     for(const auto& p : particles) xs.push_back(p.x);
     return xs;
 }
 
-std::vector<double> system::get_y_positions() {
+std::vector<double> System::get_y_positions() {
     std::vector<double> ys;
     for(const auto& p : particles) ys.push_back(p.y);
     return ys;

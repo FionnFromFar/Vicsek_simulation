@@ -4,7 +4,7 @@
 #include <vector>
 #include "particle.hpp"
 
-class system {
+class System {
 public:
 //std::vector is the command to make a list
     std::vector<Particle> particles;
@@ -15,7 +15,7 @@ public:
     double noise;
 
     //the constructor
-    system(int num_particles, double box_size, double radius, double noise);
+    System(int num_particles, double box_size, double radius, double noise);
 
     //the main methods
     void align();
